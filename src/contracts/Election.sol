@@ -11,7 +11,16 @@ contract Election {
     
     uint public candidatesCount;
 
-    function Election () public{
+    event votedEvent(
+        uint indexed _candidateId 
+    )
+
+    function addCandidate (string _name) private {
+        candidatesCount ++;
+        candidates[candidatesCount] = Candidate(candidatesCount, _name, 0);
+    }
+
+    function Election () public {
         addCandidate("Candidate 1");
         addCandidate("Candidate 2");
     }
@@ -22,9 +31,18 @@ contract Election {
     }
 
     function vote (uint _candidateId) public {
-        // update candidate vote Count
+        // update candidate vote count
+
+        require(!voters[msg.sender]);
+
+        require(_candidateId > 0 && _candidateId <= candidatesCount);
+
         voters[msg.sender] = true;
 
         candidates[_candidateId].voteCount ++;
+
+        votedEvent(_candidateId);
+
+
     }
 }
